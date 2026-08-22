@@ -1,0 +1,41 @@
+//@version=5
+indicator("Volume Footprint", shorttitle="Vol Footprint", overlay=false)
+
+// Ayarlar
+length = input.int(20, "Lookback Period", minval=1)
+rowHeight = input.int(10, "Number of Rows", minval=5, maxval=50)
+showBullish = input(true, "Show Bullish Volume")
+showBearish = input(true, "Show Bearish Volume")
+
+// Renkler
+bullColor = input(color.new(color.green, 20), "Bullish Volume Color")
+bearColor = input(color.new(color.red, 20), "Bearish Volume Color")
+
+// Hesaplamalar
+high_price = high
+low_price = low
+vol = volume
+
+// Mum yüksekliği
+candle_height = high_price - low_price
+candle_range = candle_height / rowHeight
+
+// Bullish ve Bearish hacim
+bullish_vol = close > open ? vol : vol * 0.3
+bearish_vol = close < open ? vol : vol * 0.3
+
+// Plot
+plot(bullish_vol, "Bullish Volume", color=bullColor, style=plot.style_columns)
+plot(bearish_vol, "Bearish Volume", color=bearColor, style=plot.style_columns)
+
+// Toplam hacim
+total_vol = ta.sma(vol, length)
+plot(total_vol, "SMA Volume", color=color.blue, linewidth=2)
+
+// Hacim Seviyesi Analizi
+vol_high = ta.highest(vol, length)
+vol_low = ta.lowest(vol, length)
+vol_middle = (vol_high + vol_low) / 2
+
+// Sinyal
+plot(vol_middle, "Mid Level", color=color.orange, style=plot.style_line, linewidth=1, display=display.none)
